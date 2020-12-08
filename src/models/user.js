@@ -40,6 +40,12 @@ const schema = new mongoose.Schema(
   }
 );
 
+schema.virtual('tasks', {
+  ref: 'Task',
+  localField: '_id',
+  foreignField: 'owner',
+});
+
 schema.methods.generateToken = async function () {
   const token = await jwt.sign(
     {

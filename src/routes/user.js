@@ -3,7 +3,6 @@ const router = new express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 
-// Create User
 router.post('/users', async (req, res) => {
   try {
     const user = new User(req.body);
@@ -16,7 +15,6 @@ router.post('/users', async (req, res) => {
   }
 });
 
-// Login
 router.post('/users/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body);
@@ -28,7 +26,6 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
-// Logout
 router.post('/users/logout', auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter(
@@ -43,7 +40,6 @@ router.post('/users/logout', auth, async (req, res) => {
   }
 });
 
-//Logout All
 router.post('/users/logoutAll', auth, async (req, res) => {
   try {
     req.user.tokens = [];
@@ -54,10 +50,8 @@ router.post('/users/logoutAll', auth, async (req, res) => {
   }
 });
 
-// Read Profile
 router.get('/users/me', auth, (req, res) => res.send(req.user));
 
-//Update User
 router.patch('/users/me', auth, async (req, res) => {
   const updates = ['name', 'email', 'password'];
   const keys = Object.keys(req.body);
@@ -73,8 +67,6 @@ router.patch('/users/me', auth, async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-
-// Delete User
 
 router.delete('/users/me', auth, async (req, res) => {
   try {
