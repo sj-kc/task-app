@@ -29,4 +29,40 @@ router.get('/tasks/:id', auth, async (req, res) => {
   }
 });
 
+// /tasks?completed=true
+// /tasks?limit=10&skip=20
+// /tasks?sortBy=createdAt:des
+router.get('/tasks/', auth, async (req, res) => {
+  const match = {};
+  if (req.query.completed || req.query.completed === false) {
+    match['completed'] = req.query.completed === 'true';
+  }
+
+  const sort = {};
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(':');
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+  }
+
+  const options = {
+    limit: parseInt(req.query.limit),
+    skip: parseInt(req.query.skip),
+    sort,
+  };
+
+  try {
+    await req.user
+      .populate({
+        path: 'tasks',
+        match,
+        options,
+      })
+      .execPopulate();
+
+    res.send(req.user.tasks);
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+
 module.exports = router;
