@@ -30,8 +30,8 @@ router.get('/tasks/:id', auth, async (req, res) => {
 });
 
 // /tasks?completed=true
-// /tasks?limit=10&skip=20
 // /tasks?sortBy=createdAt:des
+// /tasks?limit=10&skip=20
 router.get('/tasks/', auth, async (req, res) => {
   const match = {};
   if (req.query.completed || req.query.completed === false) {
@@ -62,6 +62,27 @@ router.get('/tasks/', auth, async (req, res) => {
     res.send(req.user.tasks);
   } catch (error) {
     res.status(500).send();
+  }
+});
+
+router.patch('/tasks/:id', auth, async (req, res) => {
+  const allowedUpdates = ['description', 'completed'];
+  const updates = Object.keys(req.body);
+
+  const isValid = updates.every((update) => allowedUpdates.includes(update));
+  if (!isValid) res.status(400).send({ error: 'Invalid update' });
+
+  try {
+    const _id = req.params.id;
+    const task = await Task.findOne({ _id, owner: req.user._id });
+
+    if (!task) return res.status(400).send();
+    updates.forEach((update) => (task[update] = req.body[update]));
+
+    await task.save();
+    res.send(task);
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 
