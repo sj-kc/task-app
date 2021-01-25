@@ -15,10 +15,10 @@ yarn install
 ### Start a local server to preview the site
 
 ```bash
-yarn dev-server
+yarn dev
 ```
 
 ### API Deployed 🚀:
 
-https://github.com/sungkimcastro/task-app.git
+
 
